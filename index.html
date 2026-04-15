@@ -541,6 +541,7 @@ header { border-bottom: 1px solid var(--border); padding: 0 24px; position: stic
         <div class="warn-tags" id="iv_warn_tags">
           <button type="button" class="warn-tag-btn tag-rude" onclick="toggleTag(this)">😤 면접관 태도 주의</button>
           <button type="button" class="warn-tag-btn tag-small" onclick="toggleTag(this)">⚠️ 5인미만 사업장 주의</button>
+          <button type="button" class="warn-tag-btn tag-wage" onclick="toggleTag(this)">🔍 과도한 신상조사</button>
         </div>
       </div>
 
@@ -985,6 +986,7 @@ function tagClass(t) {
   if (t.includes('괴롭힘')) return 'tag-harass';
   if (t.includes('임금')) return 'tag-wage';
   if (t.includes('면접관')) return 'tag-rude';
+  if (t.includes('신상조사')) return 'tag-wage';
   return 'tag-small';
 }
 function tagEmoji(t) {
@@ -992,6 +994,7 @@ function tagEmoji(t) {
   if (t.includes('괴롭힘')) return '🚨';
   if (t.includes('임금')) return '💸';
   if (t.includes('면접관')) return '😤';
+  if (t.includes('신상조사')) return '🔍';
   return '⚠️';
 }
 
