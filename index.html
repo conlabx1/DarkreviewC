@@ -392,7 +392,70 @@ header { border-bottom: 1px solid var(--border); padding: 0 24px; position: stic
         <input type="text" class="form-input" id="rv_summary" placeholder="이 회사를 한 줄로 표현한다면?">
       </div>
 
+      <div class="form-group">
+        <label class="form-label">수정용 비밀번호<span class="req">*</span></label>
+        <input type="password" class="form-input" id="rv_password" placeholder="나중에 후기 수정 시 필요합니다 (숫자/영문 4자 이상)">
+        <div style="font-size:11px;color:var(--text3);margin-top:5px;">⚠️ 비밀번호는 저장되며 분실 시 복구 불가합니다</div>
+      </div>
+
       <button class="btn-primary" style="width:100%;padding:14px;font-size:15px;border-radius:8px;" onclick="submitReview()">익명으로 후기 등록</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: EDIT REVIEW -->
+<div class="overlay" id="editOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">후기 수정</div>
+      <button class="modal-close" onclick="closeModal('editOverlay')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="edit_reviewId">
+
+      <div class="form-group">
+        <label class="form-label">수정용 비밀번호<span class="req">*</span></label>
+        <input type="password" class="form-input" id="edit_password" placeholder="후기 작성 시 입력한 비밀번호">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">항목별 평가 — 5점 만점</label>
+        <div class="score-grid">
+          <div class="score-item"><span>⭐ 종합 평점</span>
+            <div class="score-stepper"><button type="button" onclick="stepScore('edit_overall',-1)">−</button><div class="score-num" id="sc_edit_overall">0</div><button type="button" onclick="stepScore('edit_overall',1)">+</button></div>
+          </div>
+          <div class="score-item"><span>💰 급여/복지</span>
+            <div class="score-stepper"><button type="button" onclick="stepScore('edit_salary',-1)">−</button><div class="score-num" id="sc_edit_salary">0</div><button type="button" onclick="stepScore('edit_salary',1)">+</button></div>
+          </div>
+          <div class="score-item"><span>⚖️ 워라밸</span>
+            <div class="score-stepper"><button type="button" onclick="stepScore('edit_worklife',-1)">−</button><div class="score-num" id="sc_edit_worklife">0</div><button type="button" onclick="stepScore('edit_worklife',1)">+</button></div>
+          </div>
+          <div class="score-item"><span>🏢 사내문화</span>
+            <div class="score-stepper"><button type="button" onclick="stepScore('edit_culture',-1)">−</button><div class="score-num" id="sc_edit_culture">0</div><button type="button" onclick="stepScore('edit_culture',1)">+</button></div>
+          </div>
+          <div class="score-item"><span>👔 경영진</span>
+            <div class="score-stepper"><button type="button" onclick="stepScore('edit_management',-1)">−</button><div class="score-num" id="sc_edit_management">0</div><button type="button" onclick="stepScore('edit_management',1)">+</button></div>
+          </div>
+          <div class="score-item"><span>📈 승진/성장</span>
+            <div class="score-stepper"><button type="button" onclick="stepScore('edit_growth',-1)">−</button><div class="score-num" id="sc_edit_growth">0</div><button type="button" onclick="stepScore('edit_growth',1)">+</button></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">장점</label>
+        <textarea class="form-textarea" id="edit_pros"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">단점</label>
+        <textarea class="form-textarea" id="edit_cons"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">한줄평</label>
+        <input type="text" class="form-input" id="edit_summary">
+      </div>
+
+      <button class="btn-primary" style="width:100%;padding:14px;font-size:15px;border-radius:8px;" onclick="submitEditReview()">후기 수정하기</button>
     </div>
   </div>
 </div>
@@ -468,6 +531,36 @@ header { border-bottom: 1px solid var(--border); padding: 0 24px; position: stic
       <div class="form-group">
         <label class="form-label">후기<span class="req">*</span></label>
         <textarea class="form-textarea" id="iv_review" placeholder="전반적인 면접 경험을 솔직하게 적어주세요"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">면접 점수 — 5점 만점</label>
+        <div class="score-grid">
+          <div class="score-item">
+            <span>🧑‍💼 면접관 태도</span>
+            <div class="score-stepper">
+              <button type="button" onclick="stepScore('iv_attitude',-1)">−</button>
+              <div class="score-num" id="sc_iv_attitude">0</div>
+              <button type="button" onclick="stepScore('iv_attitude',1)">+</button>
+            </div>
+          </div>
+          <div class="score-item">
+            <span>🧩 면접 난이도 체감</span>
+            <div class="score-stepper">
+              <button type="button" onclick="stepScore('iv_hardness',-1)">−</button>
+              <div class="score-num" id="sc_iv_hardness">0</div>
+              <button type="button" onclick="stepScore('iv_hardness',1)">+</button>
+            </div>
+          </div>
+          <div class="score-item">
+            <span>⭐ 전반적 만족도</span>
+            <div class="score-stepper">
+              <button type="button" onclick="stepScore('iv_overall',-1)">−</button>
+              <div class="score-num" id="sc_iv_overall">0</div>
+              <button type="button" onclick="stepScore('iv_overall',1)">+</button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <button class="btn-primary" style="width:100%;padding:14px;font-size:15px;border-radius:8px;" onclick="submitInterview()">익명으로 면접 후기 등록</button>
@@ -618,6 +711,7 @@ function renderReviews(list) {
         <span class="review-rating">${stars(r.overall)} ${parseFloat(r.overall||0).toFixed(1)}</span>
         <span class="review-status">${r.employmentStatus||'익명'}</span>
         <span class="review-date">${r.date}</span>
+        <button onclick="openEditModal('${r.id}','${esc(r.pros||'')}','${esc(r.cons||'')}','${esc(r.summary||'')}',${r.overall||0},${r.salary||0},${r.worklife||0},${r.culture||0},${r.management||0},${r.growth||0})" style="margin-left:auto;background:transparent;border:1px solid var(--border);color:var(--text3);font-size:11px;padding:3px 10px;border-radius:6px;cursor:pointer;">✏️ 수정</button>
       </div>
       <div class="review-scores">
         ${scoreItem('급여',r.salary)}${scoreItem('워라밸',r.worklife)}${scoreItem('문화',r.culture)}${scoreItem('경영진',r.management)}${scoreItem('성장',r.growth)}
@@ -643,6 +737,7 @@ function renderInterviews(list) {
       </div>
       ${iv.process?`<div class="review-section"><div class="review-section-title">면접 과정</div><p>${esc(iv.process)}</p></div>`:''}
       ${iv.questions?`<div class="review-section"><div class="review-section-title">면접 질문</div><p>${esc(iv.questions)}</p></div>`:''}
+      ${(iv.attitude||iv.hardness||iv.ivOverall)?`<div class="review-scores">${iv.attitude?scoreItem('면접관태도',iv.attitude):''}${iv.hardness?scoreItem('난이도체감',iv.hardness):''}${iv.ivOverall?scoreItem('전반만족도',iv.ivOverall):''}</div>`:''}
       ${iv.review?`<div class="review-section"><div class="review-section-title">후기</div><p>${esc(iv.review)}</p></div>`:''}
     </div>`;
   }).join('');
@@ -666,13 +761,15 @@ async function submitReview() {
   const cons    = document.getElementById('rv_cons').value.trim();
   const summary = document.getElementById('rv_summary').value.trim();
   const overall = getScore('overall');
+  const password = document.getElementById('rv_password').value.trim();
 
-  if (!company) return showToast('회사명을 입력해주세요');
-  if (!status)  return showToast('재직 상태를 선택해주세요');
+  if (!company)  return showToast('회사명을 입력해주세요');
+  if (!status)   return showToast('재직 상태를 선택해주세요');
   if (overall === '0') return showToast('종합 평점을 입력해주세요');
-  if (!pros)    return showToast('장점을 입력해주세요');
-  if (!cons)    return showToast('단점을 입력해주세요');
-  if (!summary) return showToast('한줄평을 입력해주세요');
+  if (!pros)     return showToast('장점을 입력해주세요');
+  if (!cons)     return showToast('단점을 입력해주세요');
+  if (!summary)  return showToast('한줄평을 입력해주세요');
+  if (!password || password.length < 4) return showToast('비밀번호를 4자 이상 입력해주세요');
 
   const companyId = await ensureCompanyId(company, document.getElementById('rv_industry').value.trim());
 
@@ -686,7 +783,8 @@ async function submitReview() {
     growth: getScore('growth')||0,
     pros, cons, summary, employmentStatus: status,
     warnTags: getSelectedTags('rv_warn_tags'),
-    industry: document.getElementById('rv_industry').value.trim()
+    industry: document.getElementById('rv_industry').value.trim(),
+    password
   });
 
   try {
@@ -720,7 +818,10 @@ async function submitInterview() {
     process: document.getElementById('iv_process').value.trim(),
     questions: document.getElementById('iv_questions').value.trim(),
     review, warnTags: getSelectedTags('iv_warn_tags'),
-    industry: document.getElementById('iv_industry').value.trim()
+    industry: document.getElementById('iv_industry').value.trim(),
+    attitude: getScore('iv_attitude'),
+    hardness: getScore('iv_hardness'),
+    ivOverall: getScore('iv_overall')
   });
 
   try {
@@ -810,9 +911,53 @@ async function ensureCompanyId(name, industry) {
   } catch(e) { return 'tmp_'+Date.now(); }
 }
 
-// ── RESET FORMS
+// ── EDIT REVIEW
+function openEditModal(id, pros, cons, summary, overall, salary, worklife, culture, management, growth) {
+  document.getElementById('edit_reviewId').value = id;
+  document.getElementById('edit_pros').value = pros;
+  document.getElementById('edit_cons').value = cons;
+  document.getElementById('edit_summary').value = summary;
+  document.getElementById('edit_password').value = '';
+  ['overall','salary','worklife','culture','management','growth'].forEach((k,i) => {
+    const val = [overall,salary,worklife,culture,management,growth][i];
+    const el = document.getElementById('sc_edit_'+k);
+    el.textContent = val||0;
+    el.style.color = (val||0) > 0 ? 'var(--accent)' : 'var(--text3)';
+  });
+  openModal('editOverlay');
+}
+
+async function submitEditReview() {
+  const id = document.getElementById('edit_reviewId').value;
+  const password = document.getElementById('edit_password').value.trim();
+  if (!password) return showToast('비밀번호를 입력해주세요');
+
+  const params = new URLSearchParams({
+    action: 'editReview', id, password,
+    overall: getScore('edit_overall'),
+    salary: getScore('edit_salary'),
+    worklife: getScore('edit_worklife'),
+    culture: getScore('edit_culture'),
+    management: getScore('edit_management'),
+    growth: getScore('edit_growth'),
+    pros: document.getElementById('edit_pros').value.trim(),
+    cons: document.getElementById('edit_cons').value.trim(),
+    summary: document.getElementById('edit_summary').value.trim()
+  });
+
+  try {
+    const res = await fetch(`${SCRIPT_URL}?${params}`);
+    const data = await res.json();
+    if (data.error === 'WRONG_PASSWORD') return showToast('비밀번호가 틀렸습니다');
+    if (data.success) {
+      showToast('후기가 수정되었습니다! ✅');
+      closeModal('editOverlay');
+      if (currentCompany) openDetail(currentCompany.id);
+    }
+  } catch(e) { showToast('오류가 발생했습니다'); }
+}
 function resetReviewForm() {
-  ['rv_company','rv_industry','rv_pros','rv_cons','rv_summary'].forEach(id => document.getElementById(id).value='');
+  ['rv_company','rv_industry','rv_pros','rv_cons','rv_summary','rv_password'].forEach(id => document.getElementById(id).value='');
   document.getElementById('rv_status').value='';
   ['overall','salary','worklife','culture','management','growth'].forEach(k => {
     const el = document.getElementById('sc_' + k);
@@ -824,6 +969,10 @@ function resetReviewForm() {
 function resetInterviewForm() {
   ['iv_company','iv_industry','iv_process','iv_questions','iv_review'].forEach(id => document.getElementById(id).value='');
   ['iv_result','iv_difficulty','iv_method'].forEach(id => document.getElementById(id).value='');
+  ['iv_attitude','iv_hardness','iv_overall'].forEach(k => {
+    const el = document.getElementById('sc_iv_' + k);
+    if (el) { el.textContent = '0'; el.style.color = 'var(--text3)'; }
+  });
   document.querySelectorAll('#iv_warn_tags .warn-tag-btn').forEach(b => b.classList.remove('selected'));
 }
 
