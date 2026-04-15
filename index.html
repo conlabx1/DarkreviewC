@@ -47,7 +47,7 @@
     color: var(--text);
     font-family: 'Noto Sans KR', sans-serif;
     min-height: 100vh;
-    overflow-x: hidden;
+    overflow: visible;
   }
 
   /* ─── HEADER ─── */
@@ -270,7 +270,7 @@
     width: 100%;
     max-width: 600px;
     margin: auto;
-    overflow-x: hidden;
+    overflow: visible;
     animation: slideUp 0.3s ease;
   }
   @keyframes slideUp {
@@ -714,7 +714,7 @@
 <!-- ═══════════════════════════════════════
      MODAL: WRITE REVIEW
 ═══════════════════════════════════════ -->
-<div class="overlay" id="reviewOverlay" onclick="closeDetail(event)">
+<div class="overlay" id="reviewOverlay">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-header">
       <div class="modal-title">회사 후기 작성</div>
@@ -839,7 +839,7 @@
 <!-- ═══════════════════════════════════════
      MODAL: WRITE INTERVIEW
 ═══════════════════════════════════════ -->
-<div class="overlay" id="interviewOverlay" onclick="closeDetail(event)">
+<div class="overlay" id="interviewOverlay">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-header">
       <div class="modal-title">면접 후기 작성</div>
