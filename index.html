@@ -348,12 +348,16 @@
   .star-input button {
     background: none;
     border: none;
-    font-size: 20px;
+    font-size: 26px;
     cursor: pointer;
     color: var(--border);
     transition: color 0.15s;
-    padding: 0;
+    padding: 4px 3px;
     line-height: 1;
+    position: relative;
+    z-index: 10;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
   .star-input button.active { color: var(--accent); }
   .star-input button:hover { color: var(--accent); }
