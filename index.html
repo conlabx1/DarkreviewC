@@ -17,6 +17,7 @@
 <meta property="og:locale" content="ko_KR">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="어둠의 회사리뷰">
+<link rel="alternate" type="application/rss+xml" title="어둠의 회사리뷰 최근 후기" href="https://darkreviewc.vercel.app/rss.xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@700;900&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
@@ -285,6 +286,10 @@ header { border-bottom: 1px solid var(--border); padding: 0 24px; position: stic
       <div class="write-btns">
         <button class="btn-outline" onclick="openModalForCompany('reviewOverlay')">회사 후기 작성</button>
         <button class="btn-primary" onclick="openModalForCompany('interviewOverlay')">면접 후기 작성</button>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <button onclick="shareNaver(currentCompany.name)" style="flex:1;background:var(--surface2);border:1px solid var(--border);color:var(--text2);padding:7px;border-radius:8px;font-size:12px;cursor:pointer;">📤 네이버 공유</button>
+        <button onclick="shareClipboard(currentCompany.name)" style="flex:1;background:var(--surface2);border:1px solid var(--border);color:var(--text2);padding:7px;border-radius:8px;font-size:12px;cursor:pointer;">🔗 링크 복사</button>
       </div>
       <div class="tabs">
         <div class="tab active" onclick="switchTab('reviews')">회사 후기 <span id="reviewTabCount"></span></div>
@@ -628,7 +633,16 @@ let allCompanies = [];
 let currentCompany = null;
 
 // ── INIT
-window.onload = () => loadCompanies();
+window.onload = async () => {
+  await loadCompanies();
+  // URL 파라미터로 회사 자동 열기 (?company=회사명)
+  const params = new URLSearchParams(location.search);
+  const companyParam = params.get('company');
+  if (companyParam) {
+    const found = allCompanies.find(c => c.name === decodeURIComponent(companyParam));
+    if (found) openDetail(found.id);
+  }
+};
 
 async function loadCompanies() {
   try {
@@ -710,6 +724,10 @@ async function openDetail(companyId) {
   document.getElementById('interviewsPanel').innerHTML = '<div class="loading">불러오는 중...</div>';
   document.getElementById('detailOverlay').classList.add('active');
   switchTab('reviews');
+
+  // SEO 동적 업데이트
+  updateSEO(currentCompany.name, currentCompany.industry, r, hasReview);
+
   try {
     const [rv, iv] = await Promise.all([
       fetch(`${SCRIPT_URL}?action=getReviews&companyId=${companyId}`).then(r => r.json()),
@@ -735,6 +753,40 @@ async function openDetail(companyId) {
   } catch(e) {
     document.getElementById('reviewsPanel').innerHTML = '<div class="empty-state"><p>불러오지 못했습니다</p></div>';
   }
+}
+
+// ── SEO 동적 메타태그 업데이트
+function updateSEO(name, industry, rating, hasReview) {
+  const title = `${name} 후기 - 어둠의 회사리뷰`;
+  const desc = hasReview
+    ? `${name}(${industry||'기업'}) 평점 ${rating.toFixed(1)}점. 현직자·전직자가 전하는 솔직한 후기를 확인하세요.`
+    : `${name}(${industry||'기업'}) 익명 회사후기 & 면접후기. 어둠의 회사리뷰에서 확인하세요.`;
+  const url = `https://darkreviewc.vercel.app/?company=${encodeURIComponent(name)}`;
+
+  document.title = title;
+  document.querySelector('meta[name="description"]').setAttribute('content', desc);
+  document.querySelector('meta[property="og:title"]').setAttribute('content', title);
+  document.querySelector('meta[property="og:description"]').setAttribute('content', desc);
+  document.querySelector('meta[property="og:url"]').setAttribute('content', url);
+  history.replaceState(null, title, `?company=${encodeURIComponent(name)}`);
+}
+
+// ── 공유 버튼
+function shareKakao(name) {
+  const url = `https://darkreviewc.vercel.app/?company=${encodeURIComponent(name)}`;
+  const text = `${name} 회사 솔직 후기 - 어둠의 회사리뷰`;
+  window.open(`https://share.naver.com/web/shareView?url=${encodeURIComponent(url)}&title=${encodeURIComponent(text)}`, '_blank', 'width=500,height=400');
+}
+
+function shareNaver(name) {
+  const url = `https://darkreviewc.vercel.app/?company=${encodeURIComponent(name)}`;
+  const text = `${name} 회사 솔직 후기 - 어둠의 회사리뷰`;
+  window.open(`https://share.naver.com/web/shareView?url=${encodeURIComponent(url)}&title=${encodeURIComponent(text)}`, '_blank', 'width=500,height=400');
+}
+
+function shareClipboard(name) {
+  const url = `https://darkreviewc.vercel.app/?company=${encodeURIComponent(name)}`;
+  navigator.clipboard.writeText(url).then(() => showToast('링크가 복사됐어요! 🔗'));
 }
 
 function renderReviews(list) {
@@ -900,6 +952,14 @@ function openModalForCompany(id) {
 }
 function closeModal(id) {
   document.getElementById(id).classList.remove('active');
+  // 상세 모달 닫을 때 SEO 원래대로
+  if (id === 'detailOverlay') {
+    document.title = '어둠의 회사리뷰 - 솔직한 익명 회사 후기';
+    document.querySelector('meta[name="description"]').setAttribute('content', '현직자·전직자·면접자가 익명으로 전하는 솔직한 회사 후기. 급여, 워라밸, 사내문화, 면접 후기까지 모두 무료로 열람하세요.');
+    document.querySelector('meta[property="og:title"]').setAttribute('content', '어둠의 회사리뷰 - 솔직한 익명 회사 후기');
+    document.querySelector('meta[property="og:url"]').setAttribute('content', 'https://darkreviewc.vercel.app/');
+    history.replaceState(null, '', '/');
+  }
 }
 
 // ── SCORE STEPPER
