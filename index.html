@@ -341,26 +341,29 @@
     display: block;
     margin-bottom: 6px;
   }
-  .star-input {
+  .star-select-row {
     display: flex;
-    gap: 4px;
+    align-items: center;
+    gap: 8px;
   }
-  .star-input button {
-    background: none;
-    border: none;
-    font-size: 26px;
+  .star-select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: 'Noto Sans KR', sans-serif;
+    outline: none;
     cursor: pointer;
-    color: var(--border);
-    transition: color 0.15s;
-    padding: 4px 3px;
-    line-height: 1;
-    position: relative;
-    z-index: 10;
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
+    width: 80px;
   }
-  .star-input button.active { color: var(--accent); }
-  .star-input button:hover { color: var(--accent); }
+  .star-select:focus { border-color: var(--accent); }
+  .star-preview {
+    font-size: 14px;
+    color: var(--accent);
+    min-width: 60px;
+  }
 
   /* ─── TABS ─── */
   .tabs {
@@ -736,31 +739,73 @@
         </select>
       </div>
 
-      <div class="form-label" style="margin-bottom:12px;">항목별 평가<span class="req">*</span></div>
+      <div class="form-label" style="margin-bottom:12px;">항목별 평가 (5점 만점)<span class="req">*</span></div>
       <div class="star-rating-group">
         <div class="star-item">
           <label>종합 평점</label>
-          <div class="star-input" id="star_overall" data-key="overall"></div>
+          <div class="star-select-row">
+            <select class="star-select" id="sel_overall" onchange="updateStarPreview('overall',this.value)">
+              <option value="">선택</option>
+              <option value="1">1점</option><option value="2">2점</option>
+              <option value="3">3점</option><option value="4">4점</option><option value="5">5점</option>
+            </select>
+            <span class="star-preview" id="prev_overall">☆☆☆☆☆</span>
+          </div>
         </div>
         <div class="star-item">
           <label>급여/복지</label>
-          <div class="star-input" id="star_salary" data-key="salary"></div>
+          <div class="star-select-row">
+            <select class="star-select" id="sel_salary" onchange="updateStarPreview('salary',this.value)">
+              <option value="">선택</option>
+              <option value="1">1점</option><option value="2">2점</option>
+              <option value="3">3점</option><option value="4">4점</option><option value="5">5점</option>
+            </select>
+            <span class="star-preview" id="prev_salary">☆☆☆☆☆</span>
+          </div>
         </div>
         <div class="star-item">
           <label>워라밸</label>
-          <div class="star-input" id="star_worklife" data-key="worklife"></div>
+          <div class="star-select-row">
+            <select class="star-select" id="sel_worklife" onchange="updateStarPreview('worklife',this.value)">
+              <option value="">선택</option>
+              <option value="1">1점</option><option value="2">2점</option>
+              <option value="3">3점</option><option value="4">4점</option><option value="5">5점</option>
+            </select>
+            <span class="star-preview" id="prev_worklife">☆☆☆☆☆</span>
+          </div>
         </div>
         <div class="star-item">
           <label>사내문화</label>
-          <div class="star-input" id="star_culture" data-key="culture"></div>
+          <div class="star-select-row">
+            <select class="star-select" id="sel_culture" onchange="updateStarPreview('culture',this.value)">
+              <option value="">선택</option>
+              <option value="1">1점</option><option value="2">2점</option>
+              <option value="3">3점</option><option value="4">4점</option><option value="5">5점</option>
+            </select>
+            <span class="star-preview" id="prev_culture">☆☆☆☆☆</span>
+          </div>
         </div>
         <div class="star-item">
           <label>경영진</label>
-          <div class="star-input" id="star_management" data-key="management"></div>
+          <div class="star-select-row">
+            <select class="star-select" id="sel_management" onchange="updateStarPreview('management',this.value)">
+              <option value="">선택</option>
+              <option value="1">1점</option><option value="2">2점</option>
+              <option value="3">3점</option><option value="4">4점</option><option value="5">5점</option>
+            </select>
+            <span class="star-preview" id="prev_management">☆☆☆☆☆</span>
+          </div>
         </div>
         <div class="star-item">
           <label>승진/성장</label>
-          <div class="star-input" id="star_growth" data-key="growth"></div>
+          <div class="star-select-row">
+            <select class="star-select" id="sel_growth" onchange="updateStarPreview('growth',this.value)">
+              <option value="">선택</option>
+              <option value="1">1점</option><option value="2">2점</option>
+              <option value="3">3점</option><option value="4">4점</option><option value="5">5점</option>
+            </select>
+            <span class="star-preview" id="prev_growth">☆☆☆☆☆</span>
+          </div>
         </div>
       </div>
 
@@ -912,11 +957,9 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz7TAojgYFMlGDFomwKq
 
 let allCompanies = [];
 let currentCompany = null;
-let starValues = { overall: 0, salary: 0, worklife: 0, culture: 0, management: 0, growth: 0 };
 
 // ─── INIT ───
 window.onload = () => {
-  initStars();
   loadCompanies();
 };
 
@@ -1084,7 +1127,7 @@ async function submitReview() {
   const summary = document.getElementById('rv_summary').value.trim();
 
   if (!company || !status || !pros || !cons || !summary) return showToast('필수 항목을 모두 입력해주세요');
-  if (!starValues.overall) return showToast('종합 평점을 선택해주세요');
+  if (!getStarVal('overall')) return showToast('종합 평점을 선택해주세요');
 
   // 회사 찾기 or 생성
   let companyId = findOrCreateCompanyId(company, document.getElementById('rv_industry').value.trim());
@@ -1092,9 +1135,9 @@ async function submitReview() {
   const params = new URLSearchParams({
     action: 'addReview',
     companyId, companyName: company,
-    overall: starValues.overall, salary: starValues.salary || 0,
-    worklife: starValues.worklife || 0, culture: starValues.culture || 0,
-    management: starValues.management || 0, growth: starValues.growth || 0,
+    overall: getStarVal('overall'), salary: getStarVal('salary'),
+    worklife: getStarVal('worklife'), culture: getStarVal('culture'),
+    management: getStarVal('management'), growth: getStarVal('growth'),
     pros, cons, summary, employmentStatus: status,
     warnTags: getSelectedWarnTags('rv_warn_tags')
   });
@@ -1178,31 +1221,22 @@ function closeDetail(e) {
 }
 
 // ─── STAR INPUTS ───
-function initStars() {
-  ['overall','salary','worklife','culture','management','growth'].forEach(key => {
-    const container = document.getElementById('star_' + key);
-    for (let i = 1; i <= 5; i++) {
-      const btn = document.createElement('button');
-      btn.textContent = '★';
-      btn.type = 'button';
-      btn.dataset.val = i;
-      btn.onclick = () => setStar(key, i);
-      container.appendChild(btn);
-    }
-  });
+function updateStarPreview(key, val) {
+  const n = parseInt(val) || 0;
+  document.getElementById('prev_' + key).textContent = '★'.repeat(n) + '☆'.repeat(5 - n);
 }
-function setStar(key, val) {
-  starValues[key] = val;
-  const btns = document.querySelectorAll(`#star_${key} button`);
-  btns.forEach(b => b.classList.toggle('active', parseInt(b.dataset.val) <= val));
+function getStarVal(key) {
+  return parseInt(document.getElementById('sel_' + key)?.value) || 0;
 }
 
 function resetReviewForm() {
   ['rv_company','rv_industry','rv_pros','rv_cons','rv_summary'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('rv_status').value = '';
-  Object.keys(starValues).forEach(k => {
-    starValues[k] = 0;
-    document.querySelectorAll(`#star_${k} button`).forEach(b => b.classList.remove('active'));
+  ['overall','salary','worklife','culture','management','growth'].forEach(k => {
+    const sel = document.getElementById('sel_' + k);
+    if (sel) sel.value = '';
+    const prev = document.getElementById('prev_' + k);
+    if (prev) prev.textContent = '☆☆☆☆☆';
   });
 }
 function resetInterviewForm() {
