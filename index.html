@@ -9,6 +9,7 @@
 <meta name="robots" content="index, follow">
 <meta name="author" content="어둠의 회사리뷰">
 <link rel="canonical" href="https://darkreviewc.vercel.app/">
+<meta name="google-site-verification" content="pMDMN5jYIh8SGr2iENIkTd0rSGNJydElsp6ocjyW0vU" />
 
 <!-- Open Graph (카카오톡/SNS 공유용) -->
 <meta property="og:type" content="website">
@@ -484,6 +485,50 @@
     justify-content: flex-end;
   }
 
+  /* ─── WARNING TAGS ─── */
+  .warn-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .warn-tag {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;
+    cursor: default; border: 1px solid transparent;
+  }
+  .warn-tag-btn {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 700;
+    cursor: pointer; border: 1px solid transparent; background: none;
+    font-family: 'Noto Sans KR', sans-serif; transition: all 0.15s;
+  }
+  .warn-tag-btn:hover { opacity: 0.8; }
+  .warn-tag-btn.selected { box-shadow: 0 0 0 2px #fff2; }
+  .tag-small  { background: rgba(232,196,74,0.12); color: #e8c44a; border-color: rgba(232,196,74,0.25); }
+  .tag-harass { background: rgba(232,74,74,0.12);  color: #e84a4a; border-color: rgba(232,74,74,0.25); }
+  .tag-wage   { background: rgba(232,74,74,0.12);  color: #e84a4a; border-color: rgba(232,74,74,0.25); }
+  .tag-rude   { background: rgba(232,122,74,0.12); color: #e87a4a; border-color: rgba(232,122,74,0.25); }
+
+  /* ─── CONTACT SECTION ─── */
+  .contact-section {
+    max-width: 1100px; margin: 0 auto 60px; padding: 0 24px;
+  }
+  .contact-box {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 32px;
+  }
+  .contact-title {
+    font-family: 'Noto Serif KR', serif; font-size: 20px; font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .contact-desc { color: var(--text2); font-size: 13px; margin-bottom: 24px; }
+  .contact-form { display: flex; flex-direction: column; gap: 14px; }
+  .contact-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 640px) { .contact-row { grid-template-columns: 1fr; } }
+  .contact-submit {
+    background: var(--accent); border: none; color: #0f0e0d;
+    padding: 13px; border-radius: 8px; font-size: 14px; font-weight: 700;
+    cursor: pointer; font-family: 'Noto Sans KR', sans-serif;
+    transition: background 0.2s; align-self: flex-start; min-width: 140px;
+  }
+  .contact-submit:hover { background: #f0d060; }
+
   /* ─── AD BANNER ─── */
   .ad-banner {
     background: var(--surface);
@@ -691,6 +736,15 @@
       </div>
 
       <div class="form-group">
+        <label class="form-label">주의 태그 (해당되는 항목 선택)</label>
+        <div class="warn-tags" id="rv_warn_tags">
+          <button type="button" class="warn-tag-btn tag-small"  onclick="toggleWarnTag(this,'5인미만사업장주의')">⚠️ 5인미만 사업장 주의</button>
+          <button type="button" class="warn-tag-btn tag-harass" onclick="toggleWarnTag(this,'직장내괴롭힘처벌기록')">🚨 직장내 괴롭힘 처벌 기록</button>
+          <button type="button" class="warn-tag-btn tag-wage"   onclick="toggleWarnTag(this,'임금체불기록')">💸 임금체불 기록</button>
+        </div>
+      </div>
+
+      <div class="form-group">
         <label class="form-label">장점<span class="req">*</span></label>
         <textarea class="form-textarea" id="rv_pros" placeholder="이 회사의 장점을 솔직하게 적어주세요"></textarea>
       </div>
@@ -755,6 +809,14 @@
         </select>
       </div>
       <div class="form-group">
+        <label class="form-label">주의 태그 (해당되는 항목 선택)</label>
+        <div class="warn-tags" id="iv_warn_tags">
+          <button type="button" class="warn-tag-btn tag-rude" onclick="toggleWarnTag(this,'면접관태도주의')">😤 면접관 태도 주의</button>
+          <button type="button" class="warn-tag-btn tag-small" onclick="toggleWarnTag(this,'5인미만사업장주의')">⚠️ 5인미만 사업장 주의</button>
+        </div>
+      </div>
+
+      <div class="form-group">
         <label class="form-label">면접 과정</label>
         <textarea class="form-textarea" id="iv_process" placeholder="서류 → 1차 면접 → 2차 면접 순서 등을 적어주세요"></textarea>
       </div>
@@ -768,6 +830,37 @@
       </div>
 
       <button class="btn-primary" style="width:100%;padding:14px;font-size:15px;" onclick="submitInterview()">익명으로 면접 후기 등록</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<div class="contact-section">
+  <div class="contact-box">
+    <div class="contact-title">📬 문의사항</div>
+    <div class="contact-desc">허위 후기 신고, 사이트 오류, 기타 문의사항을 남겨주세요. 익명으로 접수됩니다.</div>
+    <div class="contact-form">
+      <div class="contact-row">
+        <div class="form-group" style="margin:0">
+          <label class="form-label">문의 유형</label>
+          <select class="form-select" id="ct_type">
+            <option value="">선택하세요</option>
+            <option value="허위후기신고">허위 후기 신고</option>
+            <option value="사이트오류">사이트 오류</option>
+            <option value="후기삭제요청">후기 삭제 요청</option>
+            <option value="기타">기타</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">연락처 (선택)</label>
+          <input type="text" class="form-input" id="ct_contact" placeholder="이메일 또는 연락처 (선택사항)">
+        </div>
+      </div>
+      <div class="form-group" style="margin:0">
+        <label class="form-label">내용<span class="req">*</span></label>
+        <textarea class="form-textarea" id="ct_content" placeholder="문의 내용을 입력해주세요" style="min-height:100px"></textarea>
+      </div>
+      <button class="contact-submit" onclick="submitContact()">문의 접수하기</button>
     </div>
   </div>
 </div>
@@ -891,6 +984,7 @@ function renderReviews(reviews) {
   }
   document.getElementById('reviewsPanel').innerHTML = reviews.map(r => `
     <div class="review-card">
+      ${r.warnTags ? `<div class="warn-tags">${r.warnTags.split(',').filter(Boolean).map(t => `<span class="warn-tag ${warnTagClass(t)}">${warnTagEmoji(t)} ${t}</span>`).join('')}</div>` : ''}
       <div class="review-meta">
         <span class="review-rating">${ratingToStars(r.overall)} ${parseFloat(r.overall).toFixed(1)}</span>
         <span class="review-status">${r.employmentStatus || '익명'}</span>
@@ -920,6 +1014,7 @@ function renderInterviews(interviews) {
     const diffClass = iv.difficulty === '쉬움' ? 'badge-easy' : iv.difficulty === '어려움' ? 'badge-hard' : 'badge-normal';
     return `
       <div class="review-card">
+        ${iv.warnTags ? `<div class="warn-tags">${iv.warnTags.split(',').filter(Boolean).map(t => `<span class="warn-tag ${warnTagClass(t)}">${warnTagEmoji(t)} ${t}</span>`).join('')}</div>` : ''}
         <div class="review-meta">
           <span class="interview-badge ${resultClass}">${iv.result || '-'}</span>
           <span class="interview-badge ${diffClass}">${iv.difficulty || '-'}</span>
@@ -961,7 +1056,8 @@ async function submitReview() {
     overall: starValues.overall, salary: starValues.salary || 0,
     worklife: starValues.worklife || 0, culture: starValues.culture || 0,
     management: starValues.management || 0, growth: starValues.growth || 0,
-    pros, cons, summary, employmentStatus: status
+    pros, cons, summary, employmentStatus: status,
+    warnTags: getSelectedWarnTags('rv_warn_tags')
   });
 
   try {
@@ -992,7 +1088,8 @@ async function submitInterview() {
     difficulty, result, method,
     process: document.getElementById('iv_process').value.trim(),
     questions: document.getElementById('iv_questions').value.trim(),
-    review
+    review,
+    warnTags: getSelectedWarnTags('iv_warn_tags')
   });
 
   try {
@@ -1072,6 +1169,52 @@ function resetReviewForm() {
 function resetInterviewForm() {
   ['iv_company','iv_industry','iv_process','iv_questions','iv_review'].forEach(id => document.getElementById(id).value = '');
   ['iv_result','iv_difficulty','iv_method'].forEach(id => document.getElementById(id).value = '');
+}
+
+// ─── WARN TAGS ───
+function toggleWarnTag(btn, tag) {
+  btn.classList.toggle('selected');
+}
+function getSelectedWarnTags(containerId) {
+  const btns = document.querySelectorAll(`#${containerId} .warn-tag-btn.selected`);
+  return Array.from(btns).map(b => b.dataset.tag || b.textContent.replace(/^[^\s]+\s/,'')).join(',');
+}
+function warnTagClass(t) {
+  if (t.includes('5인')) return 'tag-small';
+  if (t.includes('괴롭힘')) return 'tag-harass';
+  if (t.includes('임금')) return 'tag-wage';
+  if (t.includes('면접관')) return 'tag-rude';
+  return 'tag-small';
+}
+function warnTagEmoji(t) {
+  if (t.includes('5인')) return '⚠️';
+  if (t.includes('괴롭힘')) return '🚨';
+  if (t.includes('임금')) return '💸';
+  if (t.includes('면접관')) return '😤';
+  return '⚠️';
+}
+
+// ─── CONTACT ───
+async function submitContact() {
+  const type = document.getElementById('ct_type').value;
+  const content = document.getElementById('ct_content').value.trim();
+  if (!content) return showToast('문의 내용을 입력해주세요');
+
+  const params = new URLSearchParams({
+    action: 'addContact',
+    contactType: type || '기타',
+    contact: document.getElementById('ct_contact').value.trim(),
+    content
+  });
+  try {
+    await fetch(`${SCRIPT_URL}?${params}`);
+    showToast('문의가 접수되었습니다! 감사합니다 🙏');
+    document.getElementById('ct_type').value = '';
+    document.getElementById('ct_contact').value = '';
+    document.getElementById('ct_content').value = '';
+  } catch(e) {
+    showToast('오류가 발생했습니다. 다시 시도해주세요.');
+  }
 }
 
 // ─── HELPERS ───
